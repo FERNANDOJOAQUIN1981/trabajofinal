@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2>Simulador de Base Lunar Artemis</h2>
+        <span id="turno-label" style="background:#2563eb; padding:5px 12px; border-radius:15px; font-weight:bold;"></span>
+    </div>
+    <p style="color:#94a3b8;">Toma decisiones reales equilibrando energía, oxígeno y escudos contra radiación.</p>
+
+    <div class="res-grid">
+        <div class="res-box">⚡ Energía<h2 id="val-energia">70%</h2></div>
+        <div class="res-box">🫁 Oxígeno<h2 id="val-oxigeno">70%</h2></div>
+        <div class="res-box">🛡️ Escudo<h2 id="val-escudo">60%</h2></div>
+    </div>
+
+    <div id="zona-juego">
+        <div style="background:#1e293b; padding:18px; border-left:4px solid #f97316; border-radius:8px; margin-bottom:15px;">
+            <small id="ev-fuente" style="color:#fb923c; font-weight:bold;"></small>
+            <h3 id="ev-titulo" style="margin:5px 0;"></h3>
+            <p id="ev-desc" style="margin:0;"></p>
+        </div>
+        <div id="botones-opciones"></div>
+    </div>
+
+    <div id="zona-final" style="display:none; text-align:center; padding:20px;">
+        <h2 id="resultado-titulo"></h2>
+        <form method="POST" action="{{ url_for('guardar_mision') }}" style="max-width:400px; margin:15px auto;">
+            <div class="form-group">
+                <label>Nombre del Astronauta Junior para el Certificado:</label>
+                <input type="text" name="nombre_cadete" value="{{ session['username'] }}" required>
+            </div>
+            <input type="hidden" name="energia" id="inp-energia">
+            <input type="hidden" name="oxigeno" id="inp-oxigeno">
+            <input type="hidden" name="escudo" id="inp-escudo">
+            <input type="hidden" name="estado" id="inp-estado">
+            <button type="submit" class="btn btn-success">Guardar Resultado en Bitácora</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const escenarios = {{ escenarios | tojson }};
+    let indice = 0, energia = 70, oxigeno = 70, escudo = 60;
+
+    function render() {
+        energia = Math.max(0, Math.min(100, energia));
+        oxigeno = Math.max(0, Math.min(100, oxigeno));
+        escudo = Math.max(0, Math.min(100, escudo));
+
+        document.getElementById('val-energia').innerText = energia + '%';
+        document.getElementById('val-oxigeno').innerText = oxigeno + '%';
+        document.getElementById('val-escudo').innerText = escudo + '%';
+
+        if (energia <= 0 || oxigeno <= 0 || escudo <= 0) return finalizar('Misión Fallida');
+        if (indice >= escenarios.length) return finalizar('Misión Cumplida');
+
+        const ev = escenarios[indice];
+        document.getElementById('turno-label').innerText = `Evento ${indice + 1} de ${escenarios.length}`;
+        document.getElementById('ev-fuente').innerText = ev.fuente_nasa;
+        document.getElementById('ev-titulo').innerText = ev.titulo;
+        document.getElementById('ev-desc').innerText = ev.descripcion;
+
+        const cont = document.getElementById('botones-opciones');
+        cont.innerHTML = `
+            <button class="choice-btn" onclick="elegir(${ev.energia_a}, ${ev.oxigeno_a}, ${ev.escudo_a})"><strong>Opción A:</strong> ${ev.opcion_a}</button>
+            <button class="choice-btn" onclick="elegir(${ev.energia_b}, ${ev.oxigeno_b}, ${ev.escudo_b})"><strong>Opción B:</strong> ${ev.opcion_b}</button>
+        `;
+    }
+
+    function elegir(de, dox, des) {
+        energia += de; oxigeno += dox; escudo += des; indice++;
+        render();
+    }
+
+    function finalizar(estado) {
+        document.getElementById('zona-juego').style.display = 'none';
+        document.getElementById('zona-final').style.display = 'block';
+        document.getElementById('resultado-titulo').innerText = estado === 'Misión Cumplida' ? '🎉 ¡Misión Cumplida!' : '⚠️ Sistema Crítico: ' + estado;
+        document.getElementById('inp-energia').value = energia;
+        document.getElementById('inp-oxigeno').value = oxigeno;
+        document.getElementById('inp-escudo').value = escudo;
+        document.getElementById('inp-estado').value = estado;
+    }
+
+    render();
+</script>
+{% endblock %}

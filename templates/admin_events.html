@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+    <h2>Panel Administrador: Agregar Escenario NASA</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label>Título del Evento</label>
+            <input type="text" name="titulo" placeholder="Ej. Tormenta de Polvo en Marte" required>
+        </div>
+        <div class="form-group">
+            <label>Fuente de Datos NASA</label>
+            <input type="text" name="fuente_nasa" placeholder="Ej. NASA Mars Reconnaissance Orbiter" required>
+        </div>
+        <div class="form-group">
+            <label>Descripción para el Niño (7-12 años)</label>
+            <textarea name="descripcion" rows="2" required></textarea>
+        </div>
+        <div class="form-group">
+            <label>Texto Opción A</label>
+            <input type="text" name="opcion_a" required>
+            <div style="display:flex; gap:10px; margin-top:5px;">
+                <input type="number" name="energia_a" placeholder="Δ Energía (ej. -20)" required>
+                <input type="number" name="oxigeno_a" placeholder="Δ Oxígeno (ej. 10)" required>
+                <input type="number" name="escudo_a" placeholder="Δ Escudo (ej. 15)" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Texto Opción B</label>
+            <input type="text" name="opcion_b" required>
+            <div style="display:flex; gap:10px; margin-top:5px;">
+                <input type="number" name="energia_b" placeholder="Δ Energía (ej. 15)" required>
+                <input type="number" name="oxigeno_b" placeholder="Δ Oxígeno (ej. -15)" required>
+                <input type="number" name="escudo_b" placeholder="Δ Escudo (ej. -10)" required>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-success">Guardar Escenario en Base de Datos</button>
+    </form>
+</div>
+
+<div class="card">
+    <h3>Escenarios Activos en SQLite</h3>
+    <table>
+        <thead>
+            <tr><th>Título</th><th>Fuente NASA</th><th>Acción</th></tr>
+        </thead>
+        <tbody>
+            {% for e in escenarios %}
+            <tr>
+                <td>{{ e['titulo'] }}</td>
+                <td>{{ e['fuente_nasa'] }}</td>
+                <td><a href="{{ url_for('delete_event', id=e['id']) }}" class="btn btn-danger">Eliminar</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

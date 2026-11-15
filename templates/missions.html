@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+    <h2>Bitácora de Misiones Registradas (CRUD)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Cadete (Editar)</th>
+                <th>Energía</th>
+                <th>Oxígeno</th>
+                <th>Escudo</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in misiones %}
+            <tr>
+                <td>
+                    <form method="POST" action="{{ url_for('update_mission', id=m['id']) }}" style="display:flex; gap:5px;">
+                        <input type="text" name="nombre_cadete" value="{{ m['nombre_cadete'] }}" style="padding:5px;">
+                        <button type="submit" class="btn" style="padding:5px 10px; font-size:0.8rem;">Actualizar</button>
+                    </form>
+                </td>
+                <td>{{ m['energia_final'] }}%</td>
+                <td>{{ m['oxigeno_final'] }}%</td>
+                <td>{{ m['escudo_final'] }}%</td>
+                <td><strong>{{ m['estado'] }}</strong></td>
+                <td>
+                    <a href="{{ url_for('delete_mission', id=m['id']) }}" class="btn btn-danger">Eliminar</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" style="text-align:center;">No hay misiones guardadas aún.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

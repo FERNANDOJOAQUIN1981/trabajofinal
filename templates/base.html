@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>NASA Space Apps 2026 - Junior Astronaut Trainer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+<body>
+    {% if session.get('user_id') %}
+    <nav class="navbar">
+        <div><strong>🚀 NASA Junior Astronaut Trainer</strong> | Hola, {{ session['username'] }} ({{ session['rol'] }})</div>
+        <div>
+            <a href="{{ url_for('simulator') }}">Simulador</a>
+            <a href="{{ url_for('missions') }}">Bitácora de Misiones</a>
+            {% if session['rol'] == 'admin' %}
+            <a href="{{ url_for('admin_events') }}">Panel Admin (Escenarios)</a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}" style="color:#f87171;">Cerrar Sesión</a>
+        </div>
+    </nav>
+    {% endif %}
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
